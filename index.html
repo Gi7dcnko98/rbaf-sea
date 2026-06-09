@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>RBAF — Royal British Air Force</title>
+  <meta http-equiv="X-Content-Type-Options"  content="nosniff">
+  <meta http-equiv="X-Frame-Options"         content="DENY">
+  <meta http-equiv="Referrer-Policy"         content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy"      content="geolocation=(), microphone=(), camera=()">
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════════════════ */
+    :root {
+      --navy:      #0a0f1e;
+      --deep:      #060b16;
+      --royal:     #1a2a5e;
+      --blue:      #1d3a8a;
+      --accent:    #c8102e;
+      --gold:      #d4a017;
+      --mist:      #8fa3c0;
+      --white:     #f0f4ff;
+      --dim:       rgba(240,244,255,0.55);
+      --ok:        #4ade80;
+
+      --pad-x:     clamp(1.25rem, 5vw, 4rem);
+      --pad-sec:   clamp(4rem, 9vw, 7rem);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+    body {
+      background: var(--deep);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Grain texture */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.35;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       TYPOGRAPHY SCALE
+    ═══════════════════════════════════════════════════ */
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 11vw, 8rem);
+      line-height: 0.9; letter-spacing: 0.04em; color: var(--white);
+    }
+    h1 .accent { color: var(--accent); }
+
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      letter-spacing: 0.05em; line-height: 1; color: var(--white);
+      margin-bottom: 1.5rem;
+    }
+
+    .section-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.35em;
+      text-transform: uppercase; color: var(--mist); margin-bottom: 1rem;
+    }
+
+    .body-text { font-size: 1rem; line-height: 1.85; color: var(--dim); margin-bottom: 1rem; }
+
+    .divider { display: none; }
+
+    /* ═══════════════════════════════════════════════════
+       BUTTONS — used widely, so these stay purposeful
+    ═══════════════════════════════════════════════════ */
+    .btn-primary {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem;
+      font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      background: var(--accent); color: var(--white); border: none;
+      padding: 0.9rem 2rem; cursor: pointer; text-decoration: none;
+      transition: background 0.2s, transform 0.15s; display: inline-block;
+      clip-path: polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+    }
+    .btn-primary:hover  { background: #a50e26; transform: translateY(-2px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem;
+      font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      background: transparent; color: var(--mist);
+      border: 1px solid rgba(143,163,192,0.35);
+      padding: 0.9rem 2rem; cursor: pointer; text-decoration: none;
+      transition: color 0.2s, border-color 0.2s; display: inline-block;
+    }
+    .btn-secondary:hover { color: var(--white); border-color: rgba(240,244,255,0.6); }
+
+    /* ═══════════════════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem var(--pad-x);
+      background: linear-gradient(to bottom, rgba(6,11,22,0.97) 0%, rgba(6,11,22,0) 100%);
+      backdrop-filter: blur(3px);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem;
+      letter-spacing: 0.28em; color: var(--white); text-decoration: none;
+      flex-shrink: 0;
+    }
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex; gap: 2rem; list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.82rem;
+      font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--mist); text-decoration: none; transition: color 0.2s;
+      padding: 0.25rem 0;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-cta {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.78rem;
+      font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--white); background: var(--accent); border: none;
+      padding: 0.5rem 1.2rem; cursor: pointer; text-decoration: none;
+      transition: background 0.2s; flex-shrink: 0;
+    }
+    .nav-cta:hover { background: #a50e26; }
+
+    /* Hamburger — mobile only */
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--white); transition: transform 0.25s, opacity 0.25s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    .nav-drawer {
+      display: none; position: fixed; inset: 0; z-index: 190;
+      background: rgba(6,11,22,0.98); padding: 6rem var(--pad-x) 3rem;
+      flex-direction: column; gap: 2rem;
+    }
+    .nav-drawer.open { display: flex; }
+    .nav-drawer a {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1.6rem;
+      font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--mist); text-decoration: none; transition: color 0.2s;
+      border-bottom: 1px solid rgba(29,58,138,0.2); padding-bottom: 1.2rem;
+    }
+    .nav-drawer a:hover { color: var(--white); }
+    .nav-drawer .drawer-cta {
+      margin-top: 1rem; align-self: flex-start;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════════ */
+    #hero {
+      position: relative; min-height: 100svh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 6rem var(--pad-x) 4rem; overflow: hidden;
+      text-align: center;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 50%, rgba(29,58,138,0.3) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 8%  80%, rgba(200,16,46,0.1) 0%, transparent 60%),
+        linear-gradient(160deg, #060b16 0%, #0a0f1e 55%, #0d1530 100%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(29,58,138,0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(29,58,138,0.1) 1px, transparent 1px);
+      background-size: clamp(40px,8vw,60px) clamp(40px,8vw,60px);
+      animation: gridDrift 22s linear infinite;
+    }
+    @keyframes gridDrift {
+      0%   { transform: translate(0,0); }
+      100% { transform: translate(clamp(40px,8vw,60px), clamp(40px,8vw,60px)); }
+    }
+
+    .roundel {
+      position: absolute; right: 6%; top: 50%; transform: translateY(-50%);
+      width: clamp(180px, 30vw, 380px); height: clamp(180px, 30vw, 380px);
+      border-radius: 50%;
+      background: conic-gradient(#c8102e 0deg 120deg, #f0f4ff 120deg 210deg, #1d3a8a 210deg 360deg);
+      opacity: 0.07; animation: roundelSpin 45s linear infinite;
+    }
+    .roundel::after {
+      content: ''; position: absolute; inset: 18%;
+      border-radius: 50%; background: var(--deep);
+    }
+    @keyframes roundelSpin { to { transform: translateY(-50%) rotate(360deg); } }
+
+    .scan-line {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(29,58,138,0.5), rgba(200,16,46,0.35), transparent);
+      animation: scan 7s ease-in-out infinite; top: 0;
+    }
+    @keyframes scan { 0%{top:0;opacity:0;} 10%{opacity:1;} 90%{opacity:1;} 100%{top:100%;opacity:0;} }
+
+    .hero-content { position: relative; z-index: 2; max-width: 720px; width: 100%; text-align: center; margin: 0 auto; }
+
+    .hero-tag {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--mist); margin-bottom: 0.6rem;
+      opacity: 0; animation: fadeUp 0.8s 0.15s forwards;
+    }
+    .hero-tag::before { display: none; }
+
+    h1 { opacity: 0; animation: fadeUp 0.8s 0.35s forwards; text-align: center; }
+
+    .hero-sub {
+      font-family: 'Barlow Condensed', sans-serif; font-size: clamp(1rem,2.5vw,1.2rem);
+      font-weight: 300; letter-spacing: 0.08em; color: var(--mist);
+      margin-top: 1.5rem; line-height: 1.6;
+      opacity: 0; animation: fadeUp 0.8s 0.55s forwards;
+    }
+
+    .hero-actions {
+      display: flex; gap: 0.85rem; margin-top: 2.5rem; flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0; animation: fadeUp 0.8s 0.75s forwards;
+    }
+
+    .hero-stats {
+      display: flex; gap: clamp(2rem, 6vw, 4rem); margin-top: clamp(2.5rem,6vw,4rem);
+      flex-wrap: wrap; align-items: flex-start; justify-content: center;
+      opacity: 0; animation: fadeUp 0.8s 0.95s forwards;
+    }
+    .hero-stats > div { text-align: center; min-width: 3rem; }
+    .stat-index {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.6rem;
+      font-weight: 700; letter-spacing: 0.25em; color: var(--mist); opacity: 0.5;
+      margin-bottom: 0.2rem;
+    }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.6rem,4vw,2.2rem);
+      color: var(--white); letter-spacing: 0.05em; line-height: 1;
+    }
+    .stat-label {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem;
+      font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--mist); margin-top: 0.2rem;
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0);    }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       ABOUT
+    ═══════════════════════════════════════════════════ */
+    #about {
+      padding: var(--pad-sec) var(--pad-x);
+      display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem,6vw,5rem);
+      align-items: center;
+    }
+
+    /* Rank list — kept as a list, not heavy boxes */
+    .rank-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+    .rank-item {
+      display: grid; grid-template-columns: auto 1fr;
+      gap: 0 1.25rem; padding: 1.1rem 0;
+    }
+    .rank-item:first-child { }
+    .rank-item:hover { }
+    .rank-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem,4vw,2.8rem); line-height: 1;
+      color: var(--gold); opacity: 0.3;
+      align-self: start; min-width: 4rem;
+    }
+    .rank-body {}
+    .rank-title {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem;
+      font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--white); margin-bottom: 0.2rem;
+    }
+    .rank-desc { font-size: 0.88rem; color: var(--dim); line-height: 1.6; }
+
+    /* ═══════════════════════════════════════════════════
+       DIVISIONS — table-style list, no heavy cards
+    ═══════════════════════════════════════════════════ */
+    #divisions {
+      padding: var(--pad-sec) var(--pad-x);
+      background: linear-gradient(to bottom, transparent, rgba(26,42,94,0.06), transparent);
+    }
+    .section-header { margin-bottom: clamp(2.5rem,5vw,4rem); }
+
+    .divisions-table { width: 100%; }
+    .div-row {
+      display: grid; grid-template-columns: 5rem 1fr 2fr;
+      gap: 0 2rem; padding: 1.4rem 0;
+      align-items: start;
+    }
+    .div-row:first-child { }
+    .div-row:hover { }
+    .div-index {
+      font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem;
+      letter-spacing: 0.2em; color: var(--accent); padding-top: 3px;
+    }
+    .div-name {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1rem;
+      font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--white); padding-top: 3px;
+    }
+    .div-desc { font-size: 0.88rem; color: var(--dim); line-height: 1.65; }
+
+    /* ═══════════════════════════════════════════════════
+       PERKS — typographic list, no card boxes
+    ═══════════════════════════════════════════════════ */
+    #perks { padding: var(--pad-sec) var(--pad-x); }
+
+    .perks-intro { max-width: 580px; margin-bottom: clamp(2.5rem,5vw,4rem); }
+
+    .perks-list { display: flex; flex-direction: column; gap: 0; }
+    .perk-row {
+      display: grid; grid-template-columns: 4rem 1fr auto;
+      gap: 0 2rem; padding: 1.5rem 0;
+      align-items: start;
+    }
+    .perk-row:first-child { }
+    .perk-row:hover { }
+
+    .perk-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem,4vw,2.8rem); line-height: 1;
+      color: var(--gold); opacity: 0.3;
+    }
+    .perk-body {}
+    .perk-name {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem;
+      font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--white); margin-bottom: 0.35rem;
+    }
+    .perk-desc { font-size: 0.88rem; color: var(--dim); line-height: 1.65; }
+    .perk-tag {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.6rem;
+      font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      color: var(--mist);
+      white-space: nowrap; align-self: start; margin-top: 4px;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       CONTACT — two-column layout, forms are functional
+       boxes but styled with restraint (no drop shadows)
+    ═══════════════════════════════════════════════════ */
+    #contact {
+      padding: var(--pad-sec) var(--pad-x);
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem,6vw,5rem); align-items: start;
+    }
+
+    .contact-info {}
+    .contact-questions {
+      margin-top: 2.5rem; display: flex; flex-direction: column; gap: 0;
+    }
+    .cq-item {
+      padding: 0.6rem 0;
+      font-size: 0.9rem; color: var(--dim);
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .cq-item:first-child { }
+    .cq-item::before {
+      content: '—'; color: var(--accent); font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; flex-shrink: 0;
+    }
+
+    /* Form area — ONE sparse box for the form group, clipped edge only */
+    .forms-col { display: flex; flex-direction: column; gap: 2.5rem; }
+
+    .form-section {}
+    .form-section-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem;
+      letter-spacing: 0.08em; color: var(--white); margin-bottom: 0.35rem;
+    }
+    .form-section-sub {
+      font-size: 0.84rem; color: var(--mist); margin-bottom: 1.5rem; line-height: 1.6;
+    }
+
+    .field { margin-bottom: 1rem; }
+    label {
+      display: block; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--mist); margin-bottom: 0.35rem;
+    }
+    input[type="text"], input[type="email"], input[type="password"], input[type="search"], textarea {
+      width: 100%; background: rgba(255,255,255,0.05);
+      border: none; border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: var(--white); font-family: 'Barlow', sans-serif; font-size: 0.95rem;
+      padding: 0.7rem 0; outline: none;
+      transition: border-color 0.2s; border-radius: 0;
+      -webkit-appearance: none;
+    }
+    input:focus, textarea:focus { border-color: rgba(255,255,255,0.35); }
+    textarea { resize: vertical; min-height: 90px; }
+
+    .submit-btn {
+      width: 100%; margin-top: 1.25rem;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem;
+      font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      background: var(--accent); color: var(--white); border: none;
+      padding: 0.95rem 1rem; cursor: pointer; transition: background 0.2s;
+      clip-path: polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+      -webkit-appearance: none;
+    }
+    .submit-btn:hover    { background: #a50e26; }
+    .submit-btn:disabled { background: #2a2a3a; color: var(--mist); cursor: not-allowed; }
+
+    /* Sparse status text — no box */
+    .form-msg {
+      margin-top: 0.85rem; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.85rem; letter-spacing: 0.08em; line-height: 1.5;
+    }
+    .form-msg.ok  { color: var(--ok); }
+    .form-msg.err { color: #ff7070; }
+
+    /* Code reveal — one purposeful box */
+    .code-reveal {
+      margin-top: 1rem;
+      border-left: 2px solid var(--gold);
+      padding: 0.9rem 1.2rem;
+      background: rgba(212,160,23,0.06);
+      display: none;
+    }
+    .code-reveal-label {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem;
+      font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 0.3rem;
+    }
+    .code-reveal-value {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem;
+      letter-spacing: 0.35em; color: var(--white);
+    }
+    .code-reveal-hint {
+      font-size: 0.78rem; color: var(--mist); margin-top: 0.3rem;
+      font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.08em;
+    }
+
+    .char-counter {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem;
+      color: var(--mist); text-align: right; margin-top: 0.2rem;
+    }
+    .cooldown-notice {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.78rem;
+      letter-spacing: 0.08em; color: var(--mist); margin-top: 0.5rem;
+    }
+
+    /* Reply box — sparse left-border only */
+    .reply-box {
+      margin-top: 1rem;
+      border-left: 2px solid var(--gold);
+      padding: 0.9rem 1.2rem;
+      background: rgba(26,42,94,0.18);
+    }
+    .reply-label {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.62rem;
+      font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 0.35rem;
+    }
+    .reply-text    { font-size: 0.92rem; color: var(--white); line-height: 1.7; }
+    .reply-pending { font-size: 0.88rem; color: var(--mist); font-style: italic; }
+
+    .form-sep { display: none; }
+
+    /* ═══════════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════════ */
+    footer {
+      padding: 2.5rem var(--pad-x);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1.2rem;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
+      letter-spacing: 0.28em; color: var(--white);
+    }
+    .footer-logo span { color: var(--accent); }
+    .footer-copy {
+      font-size: 0.75rem; color: var(--mist);
+      font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.1em;
+    }
+    .discord-link {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.78rem;
+      font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--mist); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .discord-link:hover { color: #7289da; }
+
+    /* Admin trigger button — lives in the footer, not fixed */
+    #admin-trigger {
+      background: transparent;
+      border: none;
+      color: rgba(143,163,192,0.3);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      padding: 0;
+    }
+    #admin-trigger:hover { color: rgba(143,163,192,0.7); }
+
+    /* ═══════════════════════════════════════════════════
+       ADMIN OVERLAY
+       Sits on top of the public page in a hidden state.
+       Toggled by navigating to #admin or entering the
+       secret path. No email field — password only.
+    ═══════════════════════════════════════════════════ */
+    #admin-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 500;
+      background: var(--deep); overflow-y: auto;
+    }
+    #admin-overlay.visible { display: block; }
+
+    /* Login modal */
+    .admin-login-wrap {
+      min-height: 100vh; display: flex;
+      justify-content: center; align-items: center; padding: 2rem;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 50%, rgba(29,58,138,0.18) 0%, transparent 70%),
+        var(--deep);
+    }
+
+    /* ONE purposeful box — the login form */
+    .admin-login-box {
+      width: 100%; max-width: 400px;
+      border: 1px solid rgba(29,58,138,0.4);
+      clip-path: polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+      padding: 2.75rem 2.25rem;
+      background: linear-gradient(135deg, rgba(10,15,30,0.97), rgba(26,42,94,0.18));
+    }
+    .admin-login-logo {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem;
+      letter-spacing: 0.3em; color: var(--white); margin-bottom: 0.2rem;
+    }
+    .admin-login-logo span { color: var(--accent); }
+    .admin-login-sub {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem;
+      font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--mist); margin-bottom: 2.5rem;
+    }
+    .admin-login-msg {
+      margin-top: 1rem; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.82rem; letter-spacing: 0.08em; color: #ff7070; line-height: 1.5;
+    }
+
+    /* Admin panel */
+    .admin-bar {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.85rem var(--pad-x);
+      background: rgba(6,11,22,0.98);
+      backdrop-filter: blur(6px);
+      flex-wrap: wrap; gap: 0.75rem;
+    }
+    .admin-bar-left { display: flex; align-items: center; gap: 1.5rem; }
+    .admin-bar-logo {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem;
+      letter-spacing: 0.3em; color: var(--white);
+    }
+    .admin-bar-logo span { color: var(--accent); }
+    .admin-bar-title {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem;
+      font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--mist);
+    }
+    .admin-bar-right { display: flex; align-items: center; gap: 1rem; }
+    #admin-user-display {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem;
+      letter-spacing: 0.1em; color: var(--mist);
+    }
+    .logout-btn {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem;
+      font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      background: transparent; color: var(--mist);
+      border: none; cursor: pointer;
+      transition: color 0.2s;
+    }
+    .logout-btn:hover { color: var(--accent); }
+
+    .admin-content { padding: 2rem var(--pad-x); max-width: 1100px; margin: 0 auto; }
+
+    /* Stats row — numbers on their own, no box containers */
+    .stats-strip {
+      display: flex; gap: clamp(2rem,5vw,4rem); margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .strip-stat {}
+    .strip-num {
+      font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem;
+      color: var(--white); letter-spacing: 0.05em; line-height: 1;
+    }
+    .strip-label {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem;
+      font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--mist); margin-top: 0.2rem;
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .filter-btn {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem;
+      font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 0.4rem 0.75rem; cursor: pointer;
+      background: transparent; color: var(--mist);
+      border: none;
+      transition: color 0.2s;
+    }
+    .filter-btn.active { color: var(--white); }
+    .filter-btn:hover:not(.active) { color: var(--white); }
+
+    .filter-divider { display: none; }
+
+    #admin-search {
+      flex: 1; min-width: 180px; max-width: 280px;
+      background: rgba(255,255,255,0.05); border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-size: 0.82rem;
+      letter-spacing: 0.08em; padding: 0.35rem 0; outline: none;
+      transition: border-color 0.2s; -webkit-appearance: none;
+    }
+    #admin-search:focus { border-color: rgba(255,255,255,0.35); }
+    #admin-search::placeholder { color: rgba(143,163,192,0.5); }
+
+    #admin-refresh {
+      margin-left: auto; font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem;
+      font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+      background: none; border: none; color: var(--mist); cursor: pointer;
+      transition: color 0.2s;
+    }
+    #admin-refresh:hover { color: var(--white); }
+
+    /* Message list — table-style rows, no card boxes */
+    #msg-list { display: flex; flex-direction: column; gap: 0; }
+
+    .msg-row {
+      padding: 1.25rem 0;
+    }
+    .msg-row:first-child { }
+    .msg-row:hover { }
+    .msg-row.replied  { }
+    .msg-row.pending  { }
+
+    .msg-row-header {
+      display: flex; align-items: baseline; gap: 1.5rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem;
+    }
+    .msg-row-name {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 1rem; letter-spacing: 0.1em; color: var(--white);
+    }
+    .msg-row-code {
+      font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem;
+      letter-spacing: 0.25em; color: var(--gold);
+    }
+    .msg-row-date {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem;
+      letter-spacing: 0.12em; color: var(--mist);
+    }
+    .msg-row-badge {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.62rem;
+      font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.15rem 0.55rem; border: 1px solid; margin-left: auto;
+    }
+    .badge-replied { color: var(--ok); border-color: rgba(74,222,128,0.4); }
+    .badge-pending { color: var(--accent); border-color: rgba(200,16,46,0.4); }
+
+    .msg-row-question {
+      font-size: 0.88rem; color: var(--dim); line-height: 1.65;
+      margin-bottom: 0.85rem;
+    }
+
+    /* Reply area inside each row */
+    .msg-reply-label {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.62rem;
+      font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--mist); margin-bottom: 0.35rem;
+    }
+    .msg-existing-reply {
+      font-size: 0.87rem; color: var(--white); line-height: 1.6;
+      padding-left: 0.75rem; border-left: 2px solid rgba(74,222,128,0.35);
+      margin-bottom: 0.75rem;
+    }
+
+    .reply-input-row {
+      display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap;
+    }
+    .reply-textarea {
+      flex: 1; min-width: 200px;
+      background: none; border: none; border-bottom: 1px solid rgba(29,58,138,0.4);
+      color: var(--white); font-family: 'Barlow', sans-serif; font-size: 0.88rem;
+      padding: 0.5rem 0; outline: none; resize: vertical; min-height: 60px;
+      transition: border-color 0.2s; -webkit-appearance: none; border-radius: 0;
+    }
+    .reply-textarea:focus { border-color: var(--accent); }
+
+    .reply-action-btn {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem;
+      font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+      background: var(--accent); color: var(--white); border: none;
+      padding: 0.6rem 1.2rem; cursor: pointer; transition: background 0.2s;
+      white-space: nowrap; flex-shrink: 0;
+      clip-path: polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px));
+    }
+    .reply-action-btn:hover    { background: #a50e26; }
+    .reply-action-btn:disabled { background: #2a2a3a; color: var(--mist); cursor: not-allowed; }
+
+    .delete-action-btn {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem;
+      font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      background: none; border: none; color: rgba(200,16,46,0.45);
+      border-bottom: 1px solid transparent; padding-bottom: 1px; cursor: pointer;
+      transition: color 0.2s, border-color 0.2s; margin-left: 0.25rem;
+    }
+    .delete-action-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+    .reply-status-line {
+      margin-top: 0.5rem; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.78rem; letter-spacing: 0.08em;
+    }
+
+    /* Loading / empty */
+    .list-state {
+      padding: 4rem 0; text-align: center;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.88rem;
+      letter-spacing: 0.15em; color: var(--mist);
+    }
+    .dots { display: inline-flex; gap: 5px; }
+    .dot  { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: blink 1.4s infinite both; }
+    .dot:nth-child(2) { animation-delay: .2s; }
+    .dot:nth-child(3) { animation-delay: .4s; }
+    @keyframes blink { 0%,80%,100%{opacity:.2;} 40%{opacity:1;} }
+
+    /* ═══════════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      /* Nav */
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .nav-cta { display: none; } /* shown in drawer instead */
+
+      /* Hero */
+      .hero-actions { gap: 0.65rem; }
+      .hero-actions .btn-primary,
+      .hero-actions .btn-secondary { padding: 0.8rem 1.5rem; font-size: 0.8rem; }
+      .roundel { opacity: 0.04; right: -5%; }
+
+      /* About */
+      #about { grid-template-columns: 1fr; }
+
+      /* Divisions — stack to 2-col label+desc (drop index col) */
+      .div-row { grid-template-columns: 1fr; gap: 0.25rem; }
+      .div-index { display: none; }
+
+      /* Perks — stack */
+      .perk-row { grid-template-columns: 3rem 1fr; }
+      .perk-tag { display: none; } /* save space on mobile */
+
+      /* Contact */
+      #contact { grid-template-columns: 1fr; }
+
+      /* Admin */
+      .admin-bar { flex-direction: column; align-items: flex-start; }
+      .stats-strip { gap: 1.5rem; }
+      .msg-row-header { gap: 0.75rem; }
+      .msg-row-badge { margin-left: 0; }
+      .reply-input-row { flex-direction: column; align-items: stretch; }
+
+      /* Footer */
+      footer { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: clamp(3rem,14vw,5rem); }
+      .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+      .hero-actions { flex-direction: column; }
+      .perk-num { font-size: 1.8rem; }
+    }
+
+    /* Touch targets */
+    @media (pointer: coarse) {
+      .submit-btn, .btn-primary, .btn-secondary, .reply-action-btn {
+        min-height: 48px;
+      }
+      input, textarea { font-size: 16px; } /* prevent iOS zoom */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       ADMIN OVERLAY (hidden by default)
+  ══════════════════════════════════════ -->
+  <div id="admin-overlay" role="dialog" aria-modal="true" aria-label="Admin Panel">
+
+    <!-- LOGIN SCREEN -->
+    <div id="admin-login-screen" class="admin-login-wrap">
+      <div class="admin-login-box">
+        <div class="admin-login-logo"><span>RB</span>AF</div>
+        <div class="admin-login-sub">Command Panel &mdash; Restricted</div>
+
+        <div class="field">
+          <label for="admin-pass">Access Password</label>
+          <input type="password" id="admin-pass"
+                 autocomplete="current-password"
+                 placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" />
+        </div>
+        <button class="submit-btn" id="admin-login-btn" type="button">Authenticate</button>
+        <div class="admin-login-msg" id="admin-login-msg"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="admin-panel-screen" style="display:none;">
+
+      <div class="admin-bar">
+        <div class="admin-bar-left">
+          <div>
+            <div class="admin-bar-logo"><span>RB</span>AF</div>
+            <div class="admin-bar-title">Command Panel</div>
+          </div>
+        </div>
+        <div class="admin-bar-right">
+          <span id="admin-user-display"></span>
+          <button class="logout-btn" id="admin-logout-btn" type="button">Sign Out</button>
+        </div>
+      </div>
+
+      <div class="admin-content">
+
+        <div class="stats-strip">
+          <div class="strip-stat">
+            <div class="strip-num" id="st-total">—</div>
+            <div class="strip-label">Total</div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-num" id="st-pending">—</div>
+            <div class="strip-label">Pending</div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-num" id="st-replied">—</div>
+            <div class="strip-label">Replied</div>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <button class="filter-btn active" data-filter="all"     type="button">All</button>
+          <div class="filter-divider"></div>
+          <button class="filter-btn"        data-filter="pending" type="button">Pending</button>
+          <div class="filter-divider"></div>
+          <button class="filter-btn"        data-filter="replied" type="button">Replied</button>
+          <input type="search" id="admin-search" placeholder="Search..." maxlength="80" autocomplete="off" />
+          <button id="admin-refresh" type="button">Refresh</button>
+        </div>
+
+        <div id="msg-list">
+          <div class="list-state">
+            <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  <!-- /admin-overlay -->
+
+
+  <!-- ══════════════════════════════════════
+       PUBLIC SITE
+  ══════════════════════════════════════ -->
+
+  <nav id="main-nav">
+    <a class="nav-logo" href="#"><span>RB</span>AF</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#divisions">Operations</a></li>
+      <li><a href="#perks">Benefits</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a class="nav-cta" href="https://discord.gg/eHgJR2bQWT" target="_blank" rel="noopener noreferrer">Join Discord</a>
+    <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" type="button">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile drawer -->
+  <nav class="nav-drawer" id="nav-drawer" aria-label="Mobile navigation">
+    <a href="#about"     onclick="closeDrawer()">About</a>
+    <a href="#divisions" onclick="closeDrawer()">Operations</a>
+    <a href="#perks"     onclick="closeDrawer()">Benefits</a>
+    <a href="#contact"   onclick="closeDrawer()">Contact</a>
+    <a class="btn-primary drawer-cta" href="https://discord.gg/eHgJR2bQWT" target="_blank" rel="noopener noreferrer" onclick="closeDrawer()">Join Discord</a>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="roundel" aria-hidden="true"></div>
+    <div class="scan-line" aria-hidden="true"></div>
+    <div class="hero-content">
+      <p class="hero-tag">SEA Division</p>
+      <h1>Royal<br><span class="accent">British</span><br>Air Force</h1>
+      <p class="hero-sub">An elite air division operating within Navy Sim on Roblox. Honour. Discipline. Aerial supremacy.</p>
+      <div class="hero-actions">
+        <a class="btn-primary"   href="#perks">Learn More</a>
+        <a class="btn-secondary" href="https://discord.gg/eHgJR2bQWT" target="_blank" rel="noopener noreferrer">Join Discord</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">RBAF</div>
+          <div class="stat-label">Division Tag</div>
+        </div>
+        <div>
+          <div class="stat-num">SEA</div>
+          <div class="stat-label">Division</div>
+        </div>
+        <div>
+          <div class="stat-num">RAF</div>
+          <div class="stat-label">Heritage</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── ABOUT ── -->
+  <section id="about">
+    <div>
+      <p class="section-tag">Who We Are</p>
+      <h2>Forged in<br>British Tradition</h2>
+      <p class="body-text">The Royal British Air Force (RBAF) is a fictional Roblox group and elite air division operating within Navy Sim on Roblox (SEA). Modelled on the traditions and discipline of the historic Royal Air Force, we bring order and aerial dominance to the seas.</p>
+      <p class="body-text">A tight-knit community of dedicated players who value teamwork, structured ranks, and coordinated gameplay. Whether you're a seasoned pilot or a new recruit, the RBAF has a place for you.</p>
+      <div style="margin-top:2rem;">
+        <a class="btn-primary" href="https://discord.gg/eHgJR2bQWT" target="_blank" rel="noopener noreferrer">Join Our Discord</a>
+      </div>
+    </div>
+    <div>
+      <ul class="rank-list">
+        <li class="rank-item">
+          <span class="rank-num">01</span>
+          <div class="rank-body">
+            <div class="rank-title">Officer Ranks</div>
+            <div class="rank-desc">Lead squads, coordinate missions, and represent RBAF's command structure with authority and precision.</div>
+          </div>
+        </li>
+        <li class="rank-item">
+          <span class="rank-num">02</span>
+          <div class="rank-body">
+            <div class="rank-title">NCO Ranks</div>
+            <div class="rank-desc">The backbone of any operation — experienced members who train recruits and enforce discipline.</div>
+          </div>
+        </li>
+        <li class="rank-item">
+          <span class="rank-num">03</span>
+          <div class="rank-body">
+            <div class="rank-title">Enlisted Ranks</div>
+            <div class="rank-desc">Where every journey begins. Prove your worth, follow orders, and rise through the ranks.</div>
+          </div>
+        </li>
+        <li class="rank-item">
+          <span class="rank-num">04</span>
+          <div class="rank-body">
+            <div class="rank-title">Recruit</div>
+            <div class="rank-desc">Fresh from the gates. Complete basic training, pass evaluation, and earn your stripes.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── WHAT WE DO ── -->
+  <section id="divisions">
+    <div class="section-header">
+      <p class="section-tag">Our Role in Navy Sim</p>
+      <h2>What the RBAF Does</h2>
+    </div>
+    <div class="divisions-table">
+      <div class="div-row">
+        <span class="div-index">01</span>
+        <div class="div-name">Air Superiority</div>
+        <div class="div-desc">The RBAF serves as the dedicated air arm of the SEA military — providing aerial cover, strike capability, and reconnaissance across naval engagements in Navy Sim on Roblox.</div>
+      </div>
+      <div class="div-row">
+        <span class="div-index">02</span>
+        <div class="div-name">SEA Military</div>
+        <div class="div-desc">We operate as a division within the broader SEA military structure — working alongside other branches and taking orders through the chain of command.</div>
+      </div>
+      <div class="div-row">
+        <span class="div-index">03</span>
+        <div class="div-name">Ranked Structure</div>
+        <div class="div-desc">From fresh recruits to senior officers, every RBAF member holds a rank and is expected to carry out their duties with discipline and pride.</div>
+      </div>
+      <div class="div-row">
+        <span class="div-index">04</span>
+        <div class="div-name">Organised Events</div>
+        <div class="div-desc">Regular drills, patrols, and combat operations are held within Navy Sim. Members are expected to attend and participate actively.</div>
+      </div>
+      <div class="div-row">
+        <span class="div-index">05</span>
+        <div class="div-name">British Heritage</div>
+        <div class="div-desc">Modelled on the real Royal Air Force, the RBAF brings authentic British military culture to Roblox naval gaming.</div>
+      </div>
+      <div class="div-row">
+        <span class="div-index">06</span>
+        <div class="div-name">Discord Community</div>
+        <div class="div-desc">All coordination, announcements, and promotions happen through our Discord. Join us to stay in the loop and connect with the community.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── PERKS ── -->
+  <section id="perks">
+    <div class="perks-intro">
+      <p class="section-tag">Member Benefits</p>
+      <h2>What's in it for You?</h2>
+      <p class="body-text">Joining the RBAF isn't just about serving — it's about being rewarded for your dedication, skill, and loyalty to the division.</p>
+    </div>
+    <div class="perks-list">
+
+      <div class="perk-row">
+        <div class="perk-num">01</div>
+        <div class="perk-body">
+          <div class="perk-name">Giveaways</div>
+          <div class="perk-desc">Active members are entered into regular giveaways held on our Discord. The more you participate, the more chances you have to win.</div>
+        </div>
+        <span class="perk-tag">Regular Draws</span>
+      </div>
+
+      <div class="perk-row">
+        <div class="perk-num">02</div>
+        <div class="perk-body">
+          <div class="perk-name">In-Game Currency</div>
+          <div class="perk-desc">Top performers and long-serving officers can earn (SEA) in-game cash during special events and seasonal competitions. Excellence is recognised and rewarded within Navy Sim on Roblox.</div>
+        </div>
+        <span class="perk-tag">In-Game Rewards</span>
+      </div>
+
+      <div class="perk-row">
+        <div class="perk-num">03</div>
+        <div class="perk-body">
+          <div class="perk-name">In-Game Promotions</div>
+          <div class="perk-desc">Climb the RBAF rank ladder through active service, event attendance, and demonstrated leadership. Promotions unlock exclusive in-game perks and recognition.</div>
+        </div>
+        <span class="perk-tag">Rank Up</span>
+      </div>
+
+      <div class="perk-row">
+        <div class="perk-num">04</div>
+        <div class="perk-body">
+          <div class="perk-name">Real Experience</div>
+          <div class="perk-desc">Learn leadership, coordination, and strategy in a structured military environment. Skills you develop in the RBAF carry over — in-game and beyond.</div>
+        </div>
+        <span class="perk-tag">Build Skills</span>
+      </div>
+
+      <div class="perk-row">
+        <div class="perk-num">05</div>
+        <div class="perk-body">
+          <div class="perk-name">Community</div>
+          <div class="perk-desc">Join a welcoming, active group of players. Make friends, find squadmates, and be part of something bigger than just a game.</div>
+        </div>
+        <span class="perk-tag">Find Your Squad</span>
+      </div>
+
+      <div class="perk-row">
+        <div class="perk-num">06</div>
+        <div class="perk-body">
+          <div class="perk-name">Exclusive Roles &amp; Honours</div>
+          <div class="perk-desc">Earn special Discord roles, medals, and ceremonial titles that recognise your service. Stand out across the SEA community as RBAF.</div>
+        </div>
+        <span class="perk-tag">Be Recognised</span>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── CONTACT ── -->
+  <section id="contact">
+    <div class="contact-info">
+      <p class="section-tag">Get in Touch</p>
+      <h2>Ask Us<br>Anything</h2>
+      <p class="body-text">Have a question about the RBAF, how to join, our ranks, or what we do in Navy Sim on Roblox? Send us a message and an officer will reply personally.</p>
+      <p class="body-text">You'll receive a <strong style="color:var(--gold);">unique reference code</strong> when you submit. Use it to check back for our response — no account needed.</p>
+      <p class="body-text">For the fastest response, join our <a href="https://discord.gg/eHgJR2bQWT" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(200,16,46,0.4);">Discord server</a> directly.</p>
+
+      <div class="contact-questions">
+        <div class="cq-item">How do I join the RBAF?</div>
+        <div class="cq-item">What game is this in?</div>
+        <div class="cq-item">What ranks are available?</div>
+        <div class="cq-item">How do I get promoted?</div>
+      </div>
+    </div>
+
+    <div class="forms-col">
+
+      <!-- SEND MESSAGE -->
+      <div class="form-section">
+        <div class="form-section-title">Send a Message</div>
+        <div class="form-section-sub">Fill in your details and question. You'll get a reference code to check back for a reply.</div>
+        <div class="field">
+          <label for="q-name">Your Name / Roblox Username</label>
+          <input type="text" id="q-name" placeholder="e.g. AceFlyer123" maxlength="60" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="q-message">Your Question or Message</label>
+          <textarea id="q-message" placeholder="Type your question here..." maxlength="800"></textarea>
+        </div>
+        <div class="char-counter" id="char-count">0 / 800</div>
+        <button class="submit-btn" id="sendBtn" type="button">Send Message</button>
+        <div class="form-msg" id="form-status"></div>
+        <div class="cooldown-notice" id="cooldown-msg" style="display:none;"></div>
+        <div class="code-reveal" id="code-display">
+          <div class="code-reveal-label">Your Reference Code &mdash; save this</div>
+          <div class="code-reveal-value" id="code-value"></div>
+          <div class="code-reveal-hint">Use this code in the panel below to check for a reply</div>
+        </div>
+      </div>
+
+      <div class="form-sep"></div>
+
+      <!-- CHECK REPLY -->
+      <div class="form-section">
+        <div class="form-section-title">Check My Reply</div>
+        <div class="form-section-sub">Enter your reference code to see if an officer has responded.</div>
+        <div class="field">
+          <label for="check-code">Reference Code</label>
+          <input type="text" id="check-code" placeholder="e.g. RBAF-4F2A" maxlength="9"
+                 style="text-transform:uppercase;" autocomplete="off" spellcheck="false" />
+        </div>
+        <button class="submit-btn" id="checkBtn" type="button" style="margin-top:0.75rem;">Check for Reply</button>
+        <div id="reply-result"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-logo"><span>RB</span>AF</div>
+    <div class="footer-copy">Royal British Air Force &middot; Navy Sim on Roblox (SEA) &middot; Not affiliated with the real RAF</div>
+    <div style="display:flex;align-items:center;gap:1.5rem;">
+      <button id="admin-trigger" type="button">Admin</button>
+      <a class="discord-link" href="https://discord.gg/eHgJR2bQWT" target="_blank" rel="noopener noreferrer">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+        </svg>
+        Discord
+      </a>
+    </div>
+  </footer>
+
+
+  <!-- ══════════════════════════════════════
+       SCRIPTS
+  ══════════════════════════════════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
+  <script>
+  const SUPABASE_URL  = 'https://orfxlvzvrwlezbysircm.supabase.co';
+  const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY_HERE';
+
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_ANON, {
+    auth: {
+      persistSession:    true,
+      autoRefreshToken:  true,
+      detectSessionInUrl: false,
+      storageKey:        'rbaf_admin_v2'
+    }
+  });
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+
+  const hamburger = document.getElementById('hamburger');
+  const drawer    = document.getElementById('nav-drawer');
+
+  hamburger.addEventListener('click', () => {
+    const open = hamburger.classList.toggle('open');
+    drawer.classList.toggle('open', open);
+    hamburger.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+
+  function closeDrawer() {
+    hamburger.classList.remove('open');
+    drawer.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  /* Close drawer on outside click */
+  drawer.addEventListener('click', e => {
+    if (e.target === drawer) closeDrawer();
+  });
+
+  const SEND_LIMIT_MS  = 60_000;
+  const CHECK_LIMIT_MS = 10_000;
+  let lastSent  = 0;
+  let lastCheck = 0;
+
+  function validName(v)    { return /^[a-zA-Z0-9 _\-]{1,60}$/.test(v.trim()); }
+  function validMessage(v) { const t=v.trim(); return t.length>=5 && t.length<=800; }
+  function validCode(v)    { return /^RBAF-[A-Z0-9]{4}$/.test(v.trim().toUpperCase()); }
+
+  document.getElementById('q-message').addEventListener('input', function(){
+    document.getElementById('char-count').textContent = this.value.length + ' / 800';
+  });
+
+  function makeCode() {
+    const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const b = new Uint8Array(4);
+    crypto.getRandomValues(b);
+    return 'RBAF-' + Array.from(b).map(x => c[x % c.length]).join('');
+  }
+
+  document.getElementById('sendBtn').addEventListener('click', async () => {
+    const btn    = document.getElementById('sendBtn');
+    const status = document.getElementById('form-status');
+    const cdMsg  = document.getElementById('cooldown-msg');
+    const name   = document.getElementById('q-name').value;
+    const msg    = document.getElementById('q-message').value;
+    const now    = Date.now();
+
+    if (now - lastSent < SEND_LIMIT_MS) {
+      const s = Math.ceil((SEND_LIMIT_MS - (now - lastSent)) / 1000);
+      cdMsg.textContent = 'Please wait ' + s + 's before sending another message.';
+      cdMsg.style.display = 'block'; return;
+    }
+    cdMsg.style.display = 'none';
+
+    if (!validName(name)) {
+      status.textContent='Name must be 1–60 characters (letters, numbers, spaces, _ or - only).';
+      status.className='form-msg err'; return;
+    }
+    if (!validMessage(msg)) {
+      status.textContent='Message must be between 5 and 800 characters.';
+      status.className='form-msg err'; return;
+    }
+
+    btn.disabled=true; btn.textContent='Sending...'; status.textContent='';
+
+    const code = makeCode();
+    const { error } = await db.from('messages').insert([{
+      name:    name.trim().slice(0,60),
+      message: msg.trim().slice(0,800),
+      code, reply: null,
+      sent_at: new Date().toISOString()
+    }]);
+
+    if (error) {
+      status.textContent='Failed to send. Please try again shortly.';
+      status.className='form-msg err';
+      btn.disabled=false; btn.textContent='Send Message';
+    } else {
+      lastSent = Date.now();
+      status.textContent='Message sent. Save your reference code below.';
+      status.className='form-msg ok';
+      btn.textContent='Sent';
+
+      const cd = document.getElementById('code-display');
+      document.getElementById('code-value').textContent = code;
+      cd.style.display = 'block';
+      document.getElementById('q-name').value    = '';
+      document.getElementById('q-message').value = '';
+      document.getElementById('char-count').textContent = '0 / 800';
+
+      setTimeout(()=>{ btn.disabled=false; btn.textContent='Send Message'; status.textContent=''; }, SEND_LIMIT_MS);
+    }
+  });
+
+  document.getElementById('checkBtn').addEventListener('click', checkReply);
+  document.getElementById('check-code').addEventListener('keydown', e=>{ if(e.key==='Enter') checkReply(); });
+
+  async function checkReply() {
+    const now    = Date.now();
+    const code   = document.getElementById('check-code').value.trim().toUpperCase();
+    const result = document.getElementById('reply-result');
+
+    if (now - lastCheck < CHECK_LIMIT_MS) {
+      result.innerHTML='<p class="form-msg err">Please wait a moment before checking again.</p>'; return;
+    }
+    if (!validCode(code)) {
+      result.innerHTML='<p class="form-msg err">Invalid code format. Should look like RBAF-XXXX.</p>'; return;
+    }
+
+    lastCheck = Date.now();
+    result.innerHTML='<p class="form-msg" style="color:var(--mist);">Checking&hellip;</p>';
+
+    const { data, error } = await db
+      .from('messages')
+      .select('message, reply, sent_at')
+      .eq('code', code)
+      .maybeSingle();
+
+    if (error || !data) {
+      result.innerHTML='<p class="form-msg err">Code not found. Double-check and try again.</p>'; return;
+    }
+
+    const d = new Date(data.sent_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    result.innerHTML = data.reply
+      ? `<div class="reply-box">
+           <div class="reply-label">Your Question &mdash; ${esc(d)}</div>
+           <div class="reply-text" style="margin-bottom:.9rem;color:var(--mist);">&ldquo;${esc(data.message)}&rdquo;</div>
+           <div class="reply-label">RBAF Officer Reply</div>
+           <div class="reply-text">${esc(data.reply)}</div>
+         </div>`
+      : `<div class="reply-box">
+           <div class="reply-label">Your Question &mdash; ${esc(d)}</div>
+           <div class="reply-text" style="margin-bottom:.75rem;color:var(--mist);">&ldquo;${esc(data.message)}&rdquo;</div>
+           <div class="reply-pending">No reply yet &mdash; an officer will respond soon.</div>
+         </div>`;
+  }
+
+
+  /* ──────────────────────────────────────────────────────────────────────────
+   * ADMIN PANEL — restricted access
+   * ────────────────────────────────────────────────────────────────────────── */
+  const ADMIN_EMAIL = 'YOUR_ADMIN_EMAIL_HERE';
+
+  const adminOverlay    = document.getElementById('admin-overlay');
+  const adminLoginScreen = document.getElementById('admin-login-screen');
+  const adminPanelScreen = document.getElementById('admin-panel-screen');
+  const adminLoginMsg    = document.getElementById('admin-login-msg');
+
+  /* Keyboard shortcut to open admin (desktop) */
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey||e.metaKey) && e.shiftKey && e.key === 'A') {
+      e.preventDefault();
+      adminOverlay.classList.add('visible');
+      checkSession();
+    }
+  });
+
+  /* Invisible button — bottom-right corner, works on all devices */
+  document.getElementById('admin-trigger').addEventListener('click', () => {
+    adminOverlay.classList.add('visible');
+    checkSession();
+  });
+
+  /* Also open via URL hash for convenience during setup */
+  if (window.location.hash === '#rbaf-admin') {
+    adminOverlay.classList.add('visible');
+    checkSession();
+  }
+
+  async function checkSession() {
+    const { data: { session } } = await db.auth.getSession();
+    if (session) showAdminPanel(session.user);
+    else          showAdminLogin();
+  }
+
+  db.auth.onAuthStateChange((event, session) => {
+    if (!adminOverlay.classList.contains('visible')) return;
+    if (event==='SIGNED_IN' && session) showAdminPanel(session.user);
+    if (event==='SIGNED_OUT')           showAdminLogin();
+  });
+
+  function showAdminLogin() {
+    adminLoginScreen.style.display = 'flex';
+    adminPanelScreen.style.display = 'none';
+    document.getElementById('admin-pass').value = '';
+    adminLoginMsg.textContent = '';
+  }
+
+  function showAdminPanel(user) {
+    adminLoginScreen.style.display = 'none';
+    adminPanelScreen.style.display = 'block';
+    document.getElementById('admin-user-display').textContent = user.email;
+    loadMessages();
+  }
+
+  /* Login — password only, email is fixed */
+  document.getElementById('admin-login-btn').addEventListener('click', adminLogin);
+  document.getElementById('admin-pass').addEventListener('keydown', e=>{
+    if(e.key==='Enter') adminLogin();
+  });
+
+  async function adminLogin() {
+    const btn  = document.getElementById('admin-login-btn');
+    const pass = document.getElementById('admin-pass').value;
+    if (!pass) { adminLoginMsg.textContent='Please enter your password.'; return; }
+
+    btn.disabled=true; btn.textContent='Authenticating...'; adminLoginMsg.textContent='';
+
+    const { error } = await db.auth.signInWithPassword({ email: ADMIN_EMAIL, password: pass });
+    btn.disabled=false; btn.textContent='Authenticate';
+
+    if (error) {
+      /* Generic message — prevents user enumeration */
+      adminLoginMsg.textContent = 'Incorrect password. Please try again.';
+      document.getElementById('admin-pass').value = '';
+    }
+    /* On success, onAuthStateChange fires showAdminPanel() */
+  }
+
+  /* Logout */
+  document.getElementById('admin-logout-btn').addEventListener('click', async () => {
+    await db.auth.signOut();
+    adminOverlay.classList.remove('visible');
+  });
+
+  /* Close overlay on Escape */
+  document.addEventListener('keydown', e => {
+    if (e.key==='Escape' && adminOverlay.classList.contains('visible')) {
+      db.auth.signOut();
+      adminOverlay.classList.remove('visible');
+    }
+  });
+
+  /* ── Admin data ── */
+  let allMsgs = [], activeFilter = 'all', searchQ = '';
+
+  async function loadMessages() {
+    document.getElementById('msg-list').innerHTML =
+      '<div class="list-state"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+
+    const { data, error } = await db
+      .from('messages')
+      .select('id, name, message, code, reply, sent_at')
+      .order('sent_at', { ascending: false });
+
+    if (error) {
+      document.getElementById('msg-list').innerHTML = '<div class="list-state">Failed to load. Ensure you are signed in as an admin.</div>';
+      return;
+    }
+    allMsgs = data || [];
+    renderStats();
+    renderList();
+  }
+
+  function renderStats() {
+    const total = allMsgs.length, replied = allMsgs.filter(m=>m.reply).length;
+    document.getElementById('st-total').textContent   = total;
+    document.getElementById('st-pending').textContent = total - replied;
+    document.getElementById('st-replied').textContent = replied;
+  }
+
+  function filtered() {
+    return allMsgs.filter(m => {
+      const fm = activeFilter==='all' ? true : activeFilter==='pending' ? !m.reply : !!m.reply;
+      const q  = searchQ.toLowerCase();
+      const sm = !q || m.name.toLowerCase().includes(q) || m.code.toLowerCase().includes(q) || m.message.toLowerCase().includes(q);
+      return fm && sm;
+    });
+  }
+
+  function renderList() {
+    const list = document.getElementById('msg-list');
+    const rows = filtered();
+    if (!rows.length) { list.innerHTML='<div class="list-state">No messages match your filter.</div>'; return; }
+
+    list.innerHTML = rows.map(m => {
+      const date = new Date(m.sent_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const hasR = !!m.reply;
+      return `<div class="msg-row ${hasR?'replied':'pending'}" id="row-${esc(m.id)}">
+        <div class="msg-row-header">
+          <span class="msg-row-name">${esc(m.name)}</span>
+          <span class="msg-row-code">${esc(m.code)}</span>
+          <span class="msg-row-date">${esc(date)}</span>
+          <span class="msg-row-badge ${hasR?'badge-replied':'badge-pending'}">${hasR?'Replied':'Pending'}</span>
+        </div>
+        <div class="msg-row-question">${esc(m.message)}</div>
+        <div>
+          ${hasR?`<div class="msg-reply-label">Current Reply</div><div class="msg-existing-reply">${esc(m.reply)}</div>`:''}
+          <div class="reply-input-row">
+            <textarea class="reply-textarea" id="rt-${esc(m.id)}" placeholder="${hasR?'Update reply...':'Write your reply...'}" maxlength="1200">${esc(m.reply||'')}</textarea>
+            <button class="reply-action-btn" id="rb-${esc(m.id)}" type="button">${hasR?'Update':'Send Reply'}</button>
+            <button class="delete-action-btn" id="db-${esc(m.id)}" type="button">Delete</button>
+          </div>
+          <div class="reply-status-line" id="rs-${esc(m.id)}"></div>
+        </div>
+      </div>`;
+    }).join('');
+
+    rows.forEach(m => {
+      document.getElementById('rb-'+m.id).addEventListener('click', ()=>submitReply(m.id));
+      document.getElementById('db-'+m.id).addEventListener('click', ()=>deleteMsg(m.id, m.name));
+    });
+  }
+
+  async function submitReply(id) {
+    const ta  = document.getElementById('rt-'+id);
+    const btn = document.getElementById('rb-'+id);
+    const st  = document.getElementById('rs-'+id);
+    const txt = ta ? ta.value.trim() : '';
+    if (!txt) { st.textContent='Reply cannot be empty.'; st.style.color='#ff7070'; return; }
+    if (txt.length>1200) { st.textContent='Max 1200 characters.'; st.style.color='#ff7070'; return; }
+
+    btn.disabled=true; btn.textContent='Saving...'; st.textContent='';
+
+    const { error } = await db.from('messages').update({ reply: txt.slice(0,1200) }).eq('id',id);
+    if (error) {
+      st.textContent='Failed: '+error.message; st.style.color='#ff7070';
+      btn.disabled=false; btn.textContent='Retry';
+    } else {
+      const idx = allMsgs.findIndex(m=>m.id===id);
+      if (idx!==-1) allMsgs[idx].reply = txt;
+      renderStats(); renderList();
+    }
+  }
+
+  async function deleteMsg(id, name) {
+    if (!confirm('Delete message from "'+name+'"? This cannot be undone.')) return;
+    const { error } = await db.from('messages').delete().eq('id',id);
+    if (error) { alert('Delete failed: '+error.message); return; }
+    allMsgs = allMsgs.filter(m=>m.id!==id);
+    renderStats(); renderList();
+  }
+
+  /* Filters */
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active'); activeFilter=b.dataset.filter; renderList();
+    });
+  });
+  document.getElementById('admin-search').addEventListener('input', function(){
+    searchQ=this.value.trim(); renderList();
+  });
+  document.getElementById('admin-refresh').addEventListener('click', loadMessages);
+  </script>
+
+</body>
+</html>
